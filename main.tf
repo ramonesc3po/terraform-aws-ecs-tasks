@@ -1,4 +1,4 @@
-data "aws_ecs_cluster" "" {
+data "aws_ecs_cluster" "this" {
   cluster_name = var.cluster_id
 }
 
@@ -25,7 +25,7 @@ locals {
     "essential": true,
     "portMappings": [
       {
-        "containerPort": ${var.loadbalancer_container_port},
+        "containerPort": ${var.container_port},
         "protocol": "tcp"
       }
     ],
@@ -41,13 +41,13 @@ locals {
 }
 
 resource "aws_ecs_task_definition" "this" {
-  container_definitions = "${var.ecs_container_definitions == "" ? local.default_json : var.ecs_container_definitions}"
-  family                = "${var.task_family}-${var.tier}"
+  container_definitions = var.ecs_container_definitions == "" ? local.default_json : var.ecs_container_definitions
+  family                = local.name_ecs_task
 
   requires_compatibilities = ["EC2"]
 
-  execution_role_arn = "${aws_iam_role.ecs_exec_this.arn}"
-  task_role_arn      = "${aws_iam_role.ecs_task_this.arn}"
+  execution_role_arn = aws_iam_role.ecs_exec_this.arn
+  task_role_arn      = aws_iam_role.ecs_task_this.arn
 
   ipc_mode = var.ipc_mode
 
@@ -66,18 +66,16 @@ resource "aws_ecs_task_definition" "this" {
     for_each = [for volumes in var.volumes : {
       name                        = volumes.name
       host_path                   = volumes.host_path
-      docker_volume_configuration = volumes.docker_volume_configuration
     }]
     content {
       name                        = volume.value.name
       host_path                   = volume.value.host_path
-      docker_volume_configuration = volume.value.docker_volume_configuration
     }
   }
 
-  network_mode = "bridge"
+  network_mode = var.network_mode
 
-  tags = "${merge(local.commmon_tags, var.tags, map("Name", local.name_ecs_task))}"
+  tags = merge(local.commmon_tags, var.tags, { "Name" = local.name_ecs_task })
 
   lifecycle {
     ignore_changes        = ["container_definitions"]
@@ -86,29 +84,33 @@ resource "aws_ecs_task_definition" "this" {
 }
 
 resource "aws_ecs_service" "this" {
-  name            = "${local.name_ecs_task}"
-  task_definition = "${aws_ecs_task_definition.this.arn}"
-  cluster         = "${var.cluster_id}"
+  count           = 1
+  name            = local.name_ecs_task
+  task_definition = aws_ecs_task_definition.this.arn
+  cluster         = data.aws_ecs_cluster.this.id
 
-  desired_count = "${var.desired_count}"
+  desired_count = var.desired_count
+
+  deployment_maximum_percent         = "200"
+  deployment_minimum_healthy_percent = "100"
+  launch_type                        = "EC2"
+  scheduling_strategy                = var.service_scheduling_strategy
+  health_check_grace_period_seconds  = var.lb_target_group_name[0] != null ? 120 : null
 
   deployment_controller {
     type = "ECS"
   }
 
-  deployment_maximum_percent         = "200"
-  deployment_minimum_healthy_percent = "100"
-  launch_type                        = "EC2"
-  scheduling_strategy                = "${var.service_scheduling_strategy}"
-  health_check_grace_period_seconds  = "120"
-
-  load_balancer {
-    target_group_arn = "${var.laodbalancer_target_group_arn}"
-    container_name   = "${local.name_ecs_task}"
-    container_port   = "${var.loadbalancer_container_port}"
+  dynamic "load_balancer" {
+    for_each = var.lb_target_group_name[0] != null ? var.lb_target_group_name : []
+    content {
+      target_group_arn = load_balancer.value
+      container_name   = load_balancer.value
+      container_port   = load_balancer.value
+    }
   }
 
-  tags = "${merge(local.commmon_tags, var.tags, map("Name", local.name_ecs_service))}"
+  tags = merge(local.commmon_tags, var.tags, { "Name" = local.name_ecs_service })
 
   lifecycle {
     ignore_changes = [

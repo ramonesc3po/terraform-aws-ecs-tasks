@@ -14,11 +14,7 @@ variable "ecs_container_definitions" {
   default = ""
 }
 
-variable "task_family" {}
-
-variable "laodbalancer_target_group_arn" {}
-
-variable "loadbalancer_container_port" {}
+variable "container_port" {}
 
 variable "organization" {}
 
@@ -28,7 +24,10 @@ variable "service_scheduling_strategy" {
   default = "REPLICA"
 }
 
-variable "desired_count" {}
+variable "desired_count" {
+  type    = number
+  default = 0
+}
 
 ##
 # ECS Task Definitiion
@@ -39,17 +38,21 @@ variable "ipc_mode" {
   default     = "none"
 }
 
+variable "network_mode" {
+  type    = string
+  default = "bridge"
+}
+
 variable "volumes" {
   type = list(object({
-    name                        = string
-    host_path                   = string
-    docker_volume_configuration = map(string)
+    name      = string
+    host_path = string
+    #    docker_volume_configuration = map(string)
   }))
 
   default = [{
-    name                        = null
-    host_path                   = null
-    docker_volume_configuration = null
+    name      = null
+    host_path = null
   }]
 }
 
@@ -65,4 +68,13 @@ variable "placement_constraints" {
       expression = "attribute:ecs.availability-zone in [us-east-1a, us-east-1b, us-east-1c, us-east-1d, us-east-1e, us-east-1f]"
     }
   ]
+}
+
+##
+# ECS Service
+##
+variable "lb_target_group_name" {
+  description = ""
+  type = list(string)
+  default = [null,null,null]
 }

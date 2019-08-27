@@ -7,9 +7,17 @@ provider "aws" {
 module "simple-task" {
   source = "../../"
 
-  cluster_id     = "ecs-cluster-arena-staging"
-  name_ecs_task  = "webgameapp-arena-staging"
+  cluster_id     = "ecs-cluster-id"
+  name_ecs_task  = "simple-task"
   container_port = "80"
+  service_scheduling_strategy = "REPLICA"
+
+  volumes = [
+    {
+      name = "tmp"
+      host_path = "/tmp"
+    }
+  ]
 
   tier         = "staging"
   organization = "arena"

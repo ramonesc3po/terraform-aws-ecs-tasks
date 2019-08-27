@@ -1,29 +1,20 @@
-Terraform AWS Elastic Load Balancer
+Terraform AWS Elastic Container Service Tasks
 ===
 
 Developing
 
-Variables
----
-```hcl
-name = ""
-tier = ""
-organization = ""
-subnets = ""
-security_groups = []
-```
-
 Example
 ---
 ```hcl
-module "simple-elb" {
+module "simple-task" {
   source = "../../"
 
-  name            = "simple-load-balancer"
-  tier            = "production"
-  organization    = "example"
-  subnets         = aws_subnet.this_public.*.id
-  security_groups = [aws_security_group.this.id]
+  tier         = "staging"
+  organization = "arena"
+  cluster_id     = "ecs-cluster-id"
+  name_ecs_task  = "simple-task"
+  container_port = "80"
+  service_scheduling_strategy = "REPLICA"
 }
 ```
 

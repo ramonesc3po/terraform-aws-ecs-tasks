@@ -1,3 +1,6 @@
+##
+# General
+##
 variable "tags" {
   type = "map"
 
@@ -8,6 +11,13 @@ variable "tags" {
 
 variable "cluster_id" {}
 
+variable "organization" {}
+
+variable "tier" {}
+
+##
+# ECS Task Definitiion
+##
 variable "name_ecs_task" {}
 
 variable "ecs_container_definitions" {
@@ -15,10 +25,6 @@ variable "ecs_container_definitions" {
 }
 
 variable "container_port" {}
-
-variable "organization" {}
-
-variable "tier" {}
 
 variable "service_scheduling_strategy" {
   default = "REPLICA"
@@ -29,9 +35,6 @@ variable "desired_count" {
   default = 0
 }
 
-##
-# ECS Task Definitiion
-##
 variable "ipc_mode" {
   description = "(Optional) The IPC resource namespace to be used for the containers in the task The valid values are host, task, and none."
   type        = string
@@ -47,7 +50,7 @@ variable "volumes" {
   type = list(object({
     name      = string
     host_path = string
-    #    docker_volume_configuration = map(string)
+    #docker_volume_configuration = map(string)
   }))
 
   default = [{
@@ -75,6 +78,6 @@ variable "placement_constraints" {
 ##
 variable "lb_target_group_name" {
   description = ""
-  type = list(string)
-  default = [null,null,null]
+  type        = list(string)
+  default     = [null, null, null]
 }

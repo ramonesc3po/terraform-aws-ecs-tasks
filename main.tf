@@ -66,7 +66,7 @@ resource "aws_ecs_task_definition" "this" {
     for_each = [for volumes in var.volumes : {
       name                        = volumes.name
       host_path                   = volumes.host_path
-    }]
+    } if var.volumes.0.name != null ]
     content {
       name                        = volume.value.name
       host_path                   = volume.value.host_path
@@ -203,9 +203,4 @@ resource "aws_iam_role_policy_attachment" "ecs_task_container_role" {
 resource "aws_iam_role_policy_attachment" "ecs_task_cloudwatch_role" {
   role       = "${aws_iam_role.ecs_task_this.id}"
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_task_access_dynamodb" {
-  role       = "${aws_iam_role.ecs_task_this.id}"
-  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }

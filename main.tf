@@ -78,7 +78,6 @@ resource "aws_ecs_task_definition" "this" {
   tags = merge(local.commmon_tags, var.tags, { "Name" = local.name_ecs_task })
 
   lifecycle {
-    ignore_changes        = ["container_definitions"]
     create_before_destroy = true
   }
 }

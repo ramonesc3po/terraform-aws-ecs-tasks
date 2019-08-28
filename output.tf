@@ -3,5 +3,5 @@ output "ecs_service_name" {
 }
 
 output "ecs_task_family_name" {
-  value = element(concat(aws_ecs_task_definition.this.*.family, list(""), 0))
+  value = element(concat(aws_ecs_task_definition.this.*.family, list("")), 0)
 }

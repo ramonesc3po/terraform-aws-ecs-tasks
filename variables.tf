@@ -24,8 +24,6 @@ variable "ecs_container_definitions" {
   default = ""
 }
 
-variable "container_port" {}
-
 variable "service_scheduling_strategy" {
   default = "REPLICA"
 }

@@ -9,7 +9,6 @@ module "simple-task" {
 
   cluster_id     = "ecs-cluster-id"
   name_ecs_task  = "simple-task"
-  container_port = "80"
   service_scheduling_strategy = "REPLICA"
 
   volumes = [

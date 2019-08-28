@@ -25,7 +25,7 @@ locals {
     "essential": true,
     "portMappings": [
       {
-        "containerPort": ${var.container_port},
+        "containerPort": 80,
         "protocol": "tcp"
       }
     ],

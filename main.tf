@@ -88,7 +88,7 @@ resource "aws_ecs_service" "this" {
   task_definition = aws_ecs_task_definition.this.arn
   cluster         = data.aws_ecs_cluster.this.id
 
-  desired_count = var.service_scheduling_strategy == "DAEMON" ? var.desired_count : null
+  desired_count = var.service_scheduling_strategy == "DAEMON" ? null : var.desired_count
 
   deployment_maximum_percent         = "200"
   deployment_minimum_healthy_percent = "100"

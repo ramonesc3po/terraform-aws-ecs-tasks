@@ -76,6 +76,16 @@ variable "placement_constraints" {
 ##
 variable "lb_target_group_name" {
   description = ""
-  type        = list(any)
-  default     = [null, null, null]
+  type = list(object({
+    target_group_arn = string
+    container_name   = string
+    container_port   = number
+  }))
+  default = [
+    {
+      target_group_arn = null
+      container_name   = null
+      container_port   = null
+    }
+  ]
 }

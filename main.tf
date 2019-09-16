@@ -103,9 +103,9 @@ resource "aws_ecs_service" "this" {
   dynamic "load_balancer" {
     for_each = var.lb_target_group_name[0] != null ? var.lb_target_group_name : []
     content {
-      target_group_arn = load_balancer.value
-      container_name   = load_balancer.value
-      container_port   = load_balancer.value
+      target_group_arn = load_balancer.0.value
+      container_name   = load_balancer.1.value
+      container_port   = load_balancer.2.value
     }
   }
 

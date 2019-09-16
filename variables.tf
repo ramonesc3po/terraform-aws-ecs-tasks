@@ -76,6 +76,6 @@ variable "placement_constraints" {
 ##
 variable "lb_target_group_name" {
   description = ""
-  type        = list(string)
+  type        = list(any)
   default     = [null, null, null]
 }

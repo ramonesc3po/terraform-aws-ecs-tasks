@@ -89,3 +89,26 @@ variable "lb_target_group_name" {
     }
   ]
 }
+
+##
+# ECS Service scale
+##
+variable "scale" {
+  type = object({
+    max   = number
+    min   = number
+    limit = object({
+      cpu = number
+      mem = number
+    })
+  })
+
+  default = {
+    max = 10
+    min = 1
+    limit = {
+      cpu = 80
+      mem = 70
+    }
+  }
+}

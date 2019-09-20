@@ -2,7 +2,7 @@ module "autoscaling" {
   source = "github.com/ramonesc3po/tf-aws-appautoscaling-policy-ecs-service.git?ref=develop"
 
   cluster_name = data.aws_ecs_cluster.this.cluster_name
-  service_name = aws_ecs_service.this.name
+  service_name = aws_ecs_service.this[count.index].name
   resource_id  = aws_ecs_task_definition.this.id
   min_capacity = var.scale.min
   max_capacity = var.scale.max
@@ -11,7 +11,7 @@ module "autoscaling" {
 module "alarm_scale" {
   source = "github.com/ramonesc3po/tf-aws-alarm-scale-ecs-service?ref=develop"
 
-  service_name = aws_ecs_service.this.name
+  service_name = aws_ecs_service.this[count.index].name
   cluster_name = data.aws_ecs_cluster.this.cluster_name
 
   alarm_up_actions   = [module.autoscaling.appautoscaling_scale_up_policy_arn]

@@ -120,7 +120,7 @@ resource "aws_ecs_service" "this" {
       "desired_count",
     ]
 
-    create_before_destroy = true
+    create_before_destroy = false
   }
 }
 
